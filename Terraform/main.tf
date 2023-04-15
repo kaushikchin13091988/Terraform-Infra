@@ -13,43 +13,27 @@ terraform {
 }
 
 provider "aws" {
-    region = "us-east-1"
+    region = "us-east-2"
 }
 
 data "aws_region" "current" {}
 
 module "alb_module" {
     source = "./modules/alb"
-
-    # vpc_id = module.vpc_module.vpc_id
-    # public_subnet_1_id = module.vpc_module.public_subnet_1_id
-    # public_subnet_2_id = module.vpc_module.public_subnet_2_id
-    # security_group_allow_http_traffic_id = module.sg_module.security_group_allow_http_traffic_id
-
-    vpc_id = "vpc-039e5e54a507544ec"
-    public_subnet_1_id = "subnet-094e16ce489053244"
-    public_subnet_2_id = "subnet-0f4bac046a399c023" 
-    security_group_allow_http_traffic_id = "sg-0dff0e67aec2a6baa"
-
+    vpc_id = module.vpc_module.vpc_id
+    public_subnet_1_id = module.vpc_module.public_subnet_1_id
+    public_subnet_2_id = module.vpc_module.public_subnet_2_id
+    security_group_allow_http_traffic_id = module.sg_module.security_group_allow_http_traffic_id
     ecs_id = module.ecs_module.ecs_id
 }   
 
 module "ecs_module" {
     source = "./modules/ecs"
-
-    # vpc_id = module.vpc_module.vpc_id
-    # public_subnet_1_id = module.vpc_module.public_subnet_1_id
-    # public_subnet_2_id = module.vpc_module.public_subnet_2_id
-    # security_group_allow_http_traffic_id = module.sg_module.security_group_allow_http_traffic_id
-    
-    vpc_id = "vpc-039e5e54a507544ec"
-    public_subnet_1_id = "subnet-094e16ce489053244"
-    public_subnet_2_id = "subnet-0f4bac046a399c023"
-    security_group_allow_http_traffic_id = "sg-0dff0e67aec2a6baa"
-
+    vpc_id = module.vpc_module.vpc_id
+    public_subnet_1_id = module.vpc_module.public_subnet_1_id
+    public_subnet_2_id = module.vpc_module.public_subnet_2_id
+    security_group_allow_http_traffic_id = module.sg_module.security_group_allow_http_traffic_id
     target_group_id = module.alb_module.target_group_id
-    # target_group_id = "arn:aws:elasticloadbalancing:us-east-1:385501908346:targetgroup/products-service-target-group/623025c9385fcf39"
-    
     alb_id = module.alb_module.alb_id
 }   
 

@@ -21,7 +21,3 @@ variable "alb_id" {
 variable "target_group_id" {
   type = string
 }
-
-# variable "EcsServiceExecutionRole" {
-#   type = string
-# }
