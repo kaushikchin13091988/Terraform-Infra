@@ -2,7 +2,7 @@
 resource "aws_vpc" "TestVpc" {
   cidr_block = "10.0.0.0/16"
   tags = {
-    Name = "test-vpc"
+    Name = "test-kaushik-vpc"
   }
 }
 
@@ -10,7 +10,7 @@ resource "aws_vpc" "TestVpc" {
 resource "aws_internet_gateway" "TestIgw" {
     vpc_id = "${aws_vpc.TestVpc.id}"
     tags = {
-        Name = "test-igw"
+        Name = "test-kaushik-igw"
     }
 }
 
@@ -21,7 +21,7 @@ resource "aws_subnet" "TestPrivateSubnet1" {
   #availability_zone = "${aws_vpc.TestVpc.region}a"
   availability_zone = "${var.region}a"
   tags = {
-    Name = "test-private-subnet-1"
+    Name = "test-kaushik-private-subnet-1"
   }
 }
 
@@ -30,7 +30,7 @@ resource "aws_subnet" "TestPrivateSubnet2" {
   cidr_block = "10.0.1.0/24"
   availability_zone = "${var.region}b"
   tags = {
-    Name = "test-private-subnet-2"
+    Name = "test-kaushik-private-subnet-2"
   }
 }
 
@@ -40,7 +40,7 @@ resource "aws_subnet" "TestPublicSubnet2" {
   cidr_block = "10.0.2.0/24"
   availability_zone = "${var.region}a"
   tags = {
-    Name = "test-public-subnet-2"
+    Name = "test-kaushik-public-subnet-2"
   }
 }
 
@@ -49,7 +49,7 @@ resource "aws_subnet" "TestPublicSubnet1" {
   cidr_block = "10.0.3.0/24"
   availability_zone = "${var.region}b"
   tags = {
-    Name = "test-public-subnet-1"
+    Name = "test-kaushik-public-subnet-1"
   }
 }
 
@@ -58,7 +58,7 @@ resource "aws_route_table" "TestPrivateRouteTable" {
   vpc_id = aws_vpc.TestVpc.id
 
   tags = {
-    Name = "test-private-route-table"
+    Name = "test-kaushik-private-route-table"
   }
 }
 
@@ -71,7 +71,7 @@ resource "aws_route_table" "TestPublicRouteTable" {
   }
 
   tags = {
-    Name = "test-public-route-table"
+    Name = "test-kaushik-public-route-table"
   }
 }
 

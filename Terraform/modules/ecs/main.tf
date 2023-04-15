@@ -27,7 +27,6 @@ resource "aws_appautoscaling_target" "AutoScalingTarget" {
 resource "aws_ecs_service" "ECSProductsService" {
     name = "products-ecs-service"
     cluster = aws_ecs_cluster.TestECSCluster.arn
-    #iam_role        = "arn:aws:iam::385501908346:role/aws-service-role/ecs.amazonaws.com/AWSServiceRoleForECS"
     load_balancer {
         target_group_arn = "${var.target_group_id}" 
         container_name = "products-service"

@@ -44,20 +44,24 @@ resource "aws_alb_listener_rule" "TestAlbListenerRule" {
     }
     action {
         type = "forward"
-        #target_group_arn = "aws_alb_target_group.ProductServiceTargetGroup.arn"
-        target_group_arn = "arn:aws:elasticloadbalancing:us-east-1:385501908346:targetgroup/products-service-target-group/623025c9385fcf39"
+        target_group_arn = aws_alb_target_group.ProductServiceTargetGroup.arn
     }
 }
 
-# resource "aws_alb_target_group" "ProductServiceTargetGroup" {
-#   name     = "products-service-target-group"
-#   port     = 80
-#   protocol = "HTTP"
-#   vpc_id   = var.vpc_id
-#   target_type = "ip"
-# }
+resource "aws_alb_target_group" "ProductServiceTargetGroup" {
+  name     = "products-service-target-group"
+  port     = 80
+  protocol = "HTTP"
+  vpc_id   = var.vpc_id
+  target_type = "ip"
 
-# resource "aws_alb_target_group_attachment" "ProductServiceTargetGroupAttachment" {
-#   target_group_arn = aws_alb_target_group.ProductServiceTargetGroup.arn
-#   target_id = var.ecs_id
-# }
+  health_check {
+    interval            = 30
+    path                = "/api/product/health"
+    port                = "traffic-port"
+    protocol            = "HTTP"
+    timeout             = 5
+    healthy_threshold   = 2
+    unhealthy_threshold = 2
+  }
+}
