@@ -67,8 +67,8 @@ resource "aws_ecs_task_definition" "ProductsServiceECSTaskDefinition" {
   network_mode = "awsvpc"
   cpu       = 256
   memory    = 512
-  execution_role_arn       = "arn:aws:iam::385501908346:role/ecsTaskExecutionRole"
-  task_role_arn            = "arn:aws:iam::385501908346:role/ecsProductServiceTaskRole"
+  execution_role_arn       = var.ecsServiceExecutionRole_id
+  task_role_arn            = var.ecsServiceTaskRole_id
   container_definitions = jsonencode([
     {
       name      = "products-service"

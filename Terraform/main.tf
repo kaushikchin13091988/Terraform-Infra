@@ -34,7 +34,8 @@ module "ecs_module" {
     public_subnet_2_id = module.vpc_module.public_subnet_2_id
     security_group_allow_http_traffic_id = module.sg_module.security_group_allow_http_traffic_id
     target_group_id = module.alb_module.target_group_id
-    alb_id = module.alb_module.alb_id
+    ecsServiceExecutionRole_id = module.iam_module.ecsServiceExecutionRole_id
+    ecsServiceTaskRole_id = module.iam_module.ecsServiceTaskRole_id
 }   
 
 module "vpc_module" {
@@ -48,9 +49,9 @@ module "sg_module" {
         vpc_id = module.vpc_module.vpc_id
 }   
 
-# module "iam_module" {
-#         source = "./modules/iam"
-# }    
+module "iam_module" {
+        source = "./modules/iam"
+}    
 
 module "dynamodb_module" {
         source = "./modules/dynamodb"
