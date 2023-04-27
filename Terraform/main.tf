@@ -13,7 +13,7 @@ terraform {
 }
 
 provider "aws" {
-    region = "us-east-2"
+    region = "us-east-1"
 }
 
 data "aws_region" "current" {}
@@ -34,27 +34,24 @@ module "ecs_module" {
     public_subnet_2_id = module.vpc_module.public_subnet_2_id
     security_group_allow_http_traffic_id = module.sg_module.security_group_allow_http_traffic_id
     target_group_id = module.alb_module.target_group_id
-    ecsServiceExecutionRole_id = module.iam_module.ecsServiceExecutionRole_id
-    ecsServiceTaskRole_id = module.iam_module.ecsServiceTaskRole_id
 }   
 
 module "vpc_module" {
         source = "./modules/vpc"
         region = data.aws_region.current.name
-        #region = var.region
 }   
 
 module "sg_module" {
         source = "./modules/sg"
         vpc_id = module.vpc_module.vpc_id
-}   
-
-module "iam_module" {
-        source = "./modules/iam"
 }    
 
 module "dynamodb_module" {
         source = "./modules/dynamodb"
+}
+
+module "eks_module" {
+        source = "./modules/eks"
 }
 
 # module "cicd_module" {

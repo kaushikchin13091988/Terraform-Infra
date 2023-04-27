@@ -1,5 +1,4 @@
 resource "aws_codebuild_project" "ProductServiceCodeBuild" {
-    arn                    = "arn:aws:codebuild:us-east-1:385501908346:project/products-service-build"
     badge_enabled          = false
     build_timeout          = 60
     concurrent_build_limit = 0
@@ -81,7 +80,6 @@ resource "aws_codebuild_project" "ProductServiceCodeBuild" {
 
 # aws_codecommit_repository.productServiceCodeCommit:
 resource "aws_codecommit_repository" "ProductServiceCodeCommit" {
-    arn             = "arn:aws:codecommit:us-east-1:385501908346:products-service"
     clone_url_http  = "https://git-codecommit.us-east-1.amazonaws.com/v1/repos/products-service"
     clone_url_ssh   = "ssh://git-codecommit.us-east-1.amazonaws.com/v1/repos/products-service"
     id              = "products-service"
@@ -93,7 +91,6 @@ resource "aws_codecommit_repository" "ProductServiceCodeCommit" {
 
 # aws_codepipeline.productServiceCodePipeline:
 resource "aws_codepipeline" "ProductServiceCodePipeline" {
-    arn      = "arn:aws:codepipeline:us-east-1:385501908346:products-service-pipeline"
     id       = "products-service-pipeline"
     name     = "products-service-pipeline"
     role_arn = "arn:aws:iam::385501908346:role/service-role/AWSCodePipelineServiceRole-us-east-1-catpipeline"

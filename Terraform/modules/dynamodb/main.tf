@@ -18,15 +18,4 @@ resource "aws_dynamodb_table" "ProductsDynamoDbTable" {
         name = "name"
         type = "S"
     }
-
-    point_in_time_recovery {
-        enabled = false
-    }
-
-    timeouts {}
-
-    ttl {
-        attribute_name = "TimeToExist"
-        enabled        = false
-  }
 }

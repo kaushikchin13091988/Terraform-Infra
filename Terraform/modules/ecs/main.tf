@@ -54,11 +54,6 @@ resource "aws_ecs_service" "ECSProductsService" {
 
 resource "aws_ecs_cluster" "TestECSCluster" {
   name = "test-ecs-cluster"
-
-  setting {
-    name  = "containerInsights"
-    value = "enabled"
-  }
 }
 
 resource "aws_ecs_task_definition" "ProductsServiceECSTaskDefinition" {
@@ -67,8 +62,8 @@ resource "aws_ecs_task_definition" "ProductsServiceECSTaskDefinition" {
   network_mode = "awsvpc"
   cpu       = 256
   memory    = 512
-  execution_role_arn       = var.ecsServiceExecutionRole_id
-  task_role_arn            = var.ecsServiceTaskRole_id
+  execution_role_arn       = aws_iam_role.EcsServiceExecutionRole.arn
+  task_role_arn            = aws_iam_role.EcsServiceTaskRole.arn
   container_definitions = jsonencode([
     {
       name      = "products-service"
@@ -82,4 +77,65 @@ resource "aws_ecs_task_definition" "ProductsServiceECSTaskDefinition" {
       ]
     }
   ])
+}
+
+resource "aws_iam_role" "EcsServiceTaskRole" {
+  name = "EcsServiceTaskRole"
+
+  assume_role_policy = jsonencode({
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "",
+            "Effect": "Allow",
+            "Principal": {
+                "Service": "ecs-tasks.amazonaws.com"
+            },
+            "Action": "sts:AssumeRole"
+        }
+    ]
+  })
+}
+
+resource "aws_iam_policy" "DynamoDBCrudOperationsPolicy" {
+  name = "DynamoDBCrudOperationsPolicy"
+  policy = file("modules/ecs/DynamoDBCrudOperationsPolicy.json")
+}
+
+resource "aws_iam_role_policy_attachment" "DynamoDBCrudOperationsPolicyAttachment" {
+  role       = aws_iam_role.EcsServiceTaskRole.name
+  policy_arn = aws_iam_policy.DynamoDBCrudOperationsPolicy.arn
+}
+
+resource "aws_iam_role_policy_attachment" "AmazonECS_FullAccessPolicyAttachment" {
+  role       = aws_iam_role.EcsServiceTaskRole.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonECS_FullAccess"
+}
+
+resource "aws_iam_role_policy_attachment" "CloudWatchFullAccessPolicyAttachment" {
+  role       = aws_iam_role.EcsServiceTaskRole.name
+  policy_arn = "arn:aws:iam::aws:policy/CloudWatchFullAccess"
+}
+
+resource "aws_iam_role" "EcsServiceExecutionRole" {
+  name = "EcsServiceExecutionRole"
+
+  assume_role_policy = jsonencode({
+    "Version": "2008-10-17",
+    "Statement": [
+        {
+            "Sid": "",
+            "Effect": "Allow",
+            "Principal": {
+                "Service": "ecs-tasks.amazonaws.com"
+            },
+            "Action": "sts:AssumeRole"
+        }
+    ]
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "AmazonECSTaskExecutionRolePolicyAttachment" {
+  role       = aws_iam_role.EcsServiceExecutionRole.name
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
 }

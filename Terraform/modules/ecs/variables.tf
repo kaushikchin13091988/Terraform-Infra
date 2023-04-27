@@ -17,11 +17,3 @@ variable "security_group_allow_http_traffic_id" {
 variable "target_group_id" {
   type = string
 }
-
-variable "ecsServiceExecutionRole_id" {
-  type = string
-}
-
-variable "ecsServiceTaskRole_id" {
-  type = string
-}
