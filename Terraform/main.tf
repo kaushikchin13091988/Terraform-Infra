@@ -24,7 +24,7 @@ module "alb_module" {
     public_subnet_1_id = module.vpc_module.public_subnet_1_id
     public_subnet_2_id = module.vpc_module.public_subnet_2_id
     security_group_allow_http_traffic_id = module.sg_module.security_group_allow_http_traffic_id
-    ecs_id = module.ecs_module.ecs_id
+    ecs_service_id = module.ecs_module.ecs_service_id
 }   
 
 module "ecs_module" {
@@ -37,23 +37,25 @@ module "ecs_module" {
 }   
 
 module "vpc_module" {
-        source = "./modules/vpc"
-        region = data.aws_region.current.name
+    source = "./modules/vpc"
+    region = data.aws_region.current.name
 }   
 
 module "sg_module" {
-        source = "./modules/sg"
-        vpc_id = module.vpc_module.vpc_id
+    source = "./modules/sg"
+    vpc_id = module.vpc_module.vpc_id
 }    
 
 module "dynamodb_module" {
-        source = "./modules/dynamodb"
+    source = "./modules/dynamodb"
 }
 
 module "eks_module" {
-        source = "./modules/eks"
+    source = "./modules/eks"
 }
 
 module "cicd_module" {
-        source = "./modules/cicd"
+    source = "./modules/cicd"
+    ecs_cluster_name = module.ecs_module.ecs_cluster_name
+    ecs_service_name = module.ecs_module.ecs_service_name
 }  

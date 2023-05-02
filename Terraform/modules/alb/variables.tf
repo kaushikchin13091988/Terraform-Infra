@@ -14,6 +14,6 @@ variable "security_group_allow_http_traffic_id" {
   type = string
 }
 
-variable "ecs_id" {
+variable "ecs_service_id" {
   type = string
 }

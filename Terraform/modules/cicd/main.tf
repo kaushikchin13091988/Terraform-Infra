@@ -92,87 +92,108 @@ resource "aws_iam_role" "CodeBuildRole" {
     })
 }
 
-resource "aws_iam_policy" "CodeBuildBasePolicy" {
-  name = "CodeBuildBasePolicy"
-  policy = file("modules/cicd/CodeBuildBasePolicy.json")
+resource "aws_iam_policy" "CodeBuildPolicy" {
+  name = "CodeBuildPolicy"
+  policy = file("modules/cicd/CodeBuildPolicy.json")
 }
 
-resource "aws_iam_role_policy_attachment" "CodeBuildBasePolicyAttachment" {
+resource "aws_iam_role_policy_attachment" "CodeBuildPolicyAttachment" {
   role       = aws_iam_role.CodeBuildRole.name
-  policy_arn = aws_iam_policy.CodeBuildBasePolicy.arn
+  policy_arn = aws_iam_policy.CodeBuildPolicy.arn
 }
 
-# resource "aws_codepipeline" "CodePipelinePipeline" {
-#     name = "product-service-pipeline"
-#     role_arn = "arn:aws:iam::385501908346:role/service-role/CodePipelineRole"
-#     artifact_store {
-#         location = "codepipeline-us-east-1-892006371696"
-#         type = "S3"
-#     }
-#     stages {
-#         name = "Source"
-#         action = [
-#             {
-#                 name = "Source"
-#                 category = "Source"
-#                 owner = "AWS"
-#                 configuration {
-#                     BranchName = "main"
-#                     ConnectionArn = "arn:aws:codestar-connections:us-east-2:385501908346:connection/35407294-64f9-4fa3-b806-e1b0fa8e7474"
-#                     DetectChanges = "true"
-#                     FullRepositoryId = "kaushikchin13091988/Sample-Microservice"
-#                     OutputArtifactFormat = "CODE_ZIP"
-#                 }
-#                 provider = "CodeStarSourceConnection"
-#                 version = "1"
-#                 output_artifacts = [
-#                     "SourceArtifact"
-#                 ]
-#                 run_order = 1
-#             }
-#         ]
-#     }
-#     stages {
-#         name = "Build"
-#         action = [
-#             {
-#                 name = "Build"
-#                 category = "Build"
-#                 owner = "AWS"
-#                 configuration {
-#                     ProjectName = "product-service-build"
-#                 }
-#                 input_artifacts = [
-#                     "SourceArtifact"
-#                 ]
-#                 provider = "CodeBuild"
-#                 version = "1"
-#                 output_artifacts = [
-#                     "BuildArtifact"
-#                 ]
-#                 run_order = 1
-#             }
-#         ]
-#     }
-#     stages {
-#         name = "Deploy"
-#         action = [
-#             {
-#                 name = "Deploy"
-#                 category = "Deploy"
-#                 owner = "AWS"
-#                 configuration {
-#                     ClusterName = "test-ecs-cluster"
-#                     FileName = "imagedefinitions.json"
-#                     ServiceName = "products-ecs-service"
-#                 }
-#                 input_artifacts = [
-#                     "BuildArtifact"
-#                 ]
-#                 provider = "ECS"
-#                 version = "1"
-#                 run_order = 1
-#             }
-#         ]
-#     }
-# }
+resource "aws_codepipeline" "CodePipelinePipeline" {
+    name = "product-service-pipeline"
+    role_arn = aws_iam_role.CodePipelineRole.arn
+    artifact_store {
+        location = "codepipeline-us-east-1-892006371696"
+        type = "S3"
+    }
+    stage {
+        name = "Source"
+        action {
+            name = "Source"
+            category = "Source"
+            owner = "AWS"
+            configuration = {
+                BranchName = "main"
+                ConnectionArn = "arn:aws:codestar-connections:us-east-2:385501908346:connection/35407294-64f9-4fa3-b806-e1b0fa8e7474"
+                DetectChanges = "true"
+                FullRepositoryId = "kaushikchin13091988/Sample-Microservice"
+                OutputArtifactFormat = "CODE_ZIP"
+            }
+            provider = "CodeStarSourceConnection"
+            version = "1"
+            output_artifacts = [
+                "SourceArtifact"
+            ]
+            run_order = 1
+        }
+    }
+    stage {
+        name = "Build"
+        action {
+            name = "Build"
+            category = "Build"
+            owner = "AWS"
+            configuration = {
+                ProjectName = aws_codebuild_project.ProductServiceCodeBuild.name
+            }
+            input_artifacts = [
+                "SourceArtifact"
+            ]
+            provider = "CodeBuild"
+            version = "1"
+            output_artifacts = [
+                "BuildArtifact"
+            ]
+            run_order = 1
+        }
+    }
+    stage {
+        name = "Deploy"
+        action {
+            name = "Deploy"
+            category = "Deploy"
+            owner = "AWS"
+            configuration = {
+                ClusterName = var.ecs_cluster_name
+                FileName = "imagedefinitions.json"
+                ServiceName = var.ecs_service_name
+            }
+            input_artifacts = [
+                "BuildArtifact"
+            ]
+            provider = "ECS"
+            version = "1"
+            run_order = 1
+        }
+    }
+}
+
+resource "aws_iam_role" "CodePipelineRole" {
+  name = "CodePipelineRole"
+
+  assume_role_policy = jsonencode({
+        "Version": "2012-10-17",
+        "Statement": [
+            {
+                "Effect": "Allow",
+                "Principal": {
+                    "Service": "codepipeline.amazonaws.com"
+                },
+                "Action": "sts:AssumeRole"
+            }
+        ]
+    })
+}
+
+resource "aws_iam_policy" "CodePipelinePolicy" {
+  name = "CodePipelinePolicy"
+  policy = file("modules/cicd/CodePipelinePolicy.json")
+}
+
+resource "aws_iam_role_policy_attachment" "CodePipelinePolicyAttachment" {
+  role       = aws_iam_role.CodePipelineRole.name
+  policy_arn = aws_iam_policy.CodePipelinePolicy.arn
+}
