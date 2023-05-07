@@ -1,0 +1,5 @@
+s3_bucket_code_pipeline_artifacts_name = "codepipeline-files-20231101"
+github_repo_url = "https://github.com/kaushikchin13091988/Sample-Microservice.git"
+github_repo_id = "kaushikchin13091988/Sample-Microservice"
+github_personal_access_token = "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"
+github_connection_arn = "arn:aws:codestar-connections:us-east-2:385501908346:connection/35407294-64f9-4fa3-b806-e1b0fa8e7474"

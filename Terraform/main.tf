@@ -58,4 +58,9 @@ module "cicd_module" {
     source = "./modules/cicd"
     ecs_cluster_name = module.ecs_module.ecs_cluster_name
     ecs_service_name = module.ecs_module.ecs_service_name
+    s3_bucket_code_pipeline_artifacts_name = var.s3_bucket_code_pipeline_artifacts_name
+    github_repo_url = var.github_repo_url
+    github_repo_id = var.github_repo_id
+    github_personal_access_token = var.github_personal_access_token
+    github_connection_arn = var.github_connection_arn
 }  

@@ -59,7 +59,7 @@ resource "aws_codebuild_project" "ProductServiceCodeBuild" {
     source {
         git_clone_depth     = 1
         insecure_ssl        = false
-        location            = "https://github.com/kaushikchin13091988/Sample-Microservice.git"
+        location            = var.github_repo_url
         report_build_status = false
         type                = "GITHUB"
 
@@ -72,7 +72,7 @@ resource "aws_codebuild_project" "ProductServiceCodeBuild" {
 resource "aws_codebuild_source_credential" "ProductServiceCodeBuildSourceCredential" {
   auth_type   = "PERSONAL_ACCESS_TOKEN"
   server_type = "GITHUB"
-  token       = "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"
+  token       = var.github_personal_access_token
 }
 
 resource "aws_iam_role" "CodeBuildRole" {
@@ -106,7 +106,7 @@ resource "aws_codepipeline" "CodePipelinePipeline" {
     name = "product-service-pipeline"
     role_arn = aws_iam_role.CodePipelineRole.arn
     artifact_store {
-        location = "codepipeline-us-east-1-892006371696"
+        location = var.s3_bucket_code_pipeline_artifacts_name
         type = "S3"
     }
     stage {
@@ -117,9 +117,9 @@ resource "aws_codepipeline" "CodePipelinePipeline" {
             owner = "AWS"
             configuration = {
                 BranchName = "main"
-                ConnectionArn = "arn:aws:codestar-connections:us-east-2:385501908346:connection/35407294-64f9-4fa3-b806-e1b0fa8e7474"
+                ConnectionArn = var.github_connection_arn
                 DetectChanges = "true"
-                FullRepositoryId = "kaushikchin13091988/Sample-Microservice"
+                FullRepositoryId = var.github_repo_id
                 OutputArtifactFormat = "CODE_ZIP"
             }
             provider = "CodeStarSourceConnection"
