@@ -69,12 +69,6 @@ resource "aws_codebuild_project" "ProductServiceCodeBuild" {
     }
 }
 
-resource "aws_codebuild_source_credential" "ProductServiceCodeBuildSourceCredential" {
-  auth_type   = "PERSONAL_ACCESS_TOKEN"
-  server_type = "GITHUB"
-  token       = var.github_personal_access_token
-}
-
 resource "aws_iam_role" "CodeBuildRole" {
   name = "CodeBuildRole"
 
@@ -119,7 +113,7 @@ resource "aws_codepipeline" "CodePipelinePipeline" {
                 BranchName = "main"
                 ConnectionArn = var.github_connection_arn
                 DetectChanges = "true"
-                FullRepositoryId = var.github_repo_id
+                FullRepositoryId = regex("github.com/(.*)\\.git$", var.github_repo_url)[0]
                 OutputArtifactFormat = "CODE_ZIP"
             }
             provider = "CodeStarSourceConnection"
