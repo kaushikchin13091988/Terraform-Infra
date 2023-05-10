@@ -1,23 +1,3 @@
-terraform {
-    required_providers {
-        aws = {
-            source = "hashicorp/aws"
-            version = "~> 4.65.0"
-        }
-    }
-
-    backend "s3" {
-        bucket = "terraform-state-files-20231101"
-        key = "terraform.tfstate"
-    }
-}
-
-provider "aws" {
-    region = "us-east-1"
-}
-
-data "aws_region" "current" {}
-
 module "alb_module" {
     source = "./modules/alb"
     vpc_id = module.vpc_module.vpc_id
