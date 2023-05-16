@@ -28,7 +28,7 @@ resource "aws_ecs_service" "ECSProductsService" {
     name = "products-ecs-service"
     cluster = aws_ecs_cluster.TestECSCluster.arn
     load_balancer {
-        target_group_arn = "${var.target_group_id}" 
+        target_group_arn = var.target_group_id
         container_name = "products-service"
         container_port = 80
     }
