@@ -28,24 +28,21 @@ resource "aws_codebuild_project" "ProductServiceCodeBuild" {
         type                        = "LINUX_CONTAINER"
 
         environment_variable {
-            name  = "AWS_DEFAULT_REGION"
+            name  = "DOCKER_IMAGE_URL"
             type  = "PLAINTEXT"
-            value = "us-east-1"
+            value = var.docker_image_url
         }
-        environment_variable {
-            name  = "AWS_ACCOUNT_ID"
-            type  = "PLAINTEXT"
-            value = "385501908346"
-        }
-        environment_variable {
-            name  = "IMAGE_REPO_NAME"
-            type  = "PLAINTEXT"
-            value = "products-service"
-        }
+
         environment_variable {
             name  = "IMAGE_TAG"
             type  = "PLAINTEXT"
-            value = "latest"
+            value = latest
+        }
+
+        environment_variable {
+            name  = "DOCKER_USERNAME"
+            type  = "PLAINTEXT"
+            value = var.docker_user_name
         }
     }
 

@@ -17,3 +17,7 @@ variable "security_group_allow_http_traffic_id" {
 variable "target_group_id" {
   type = string
 }
+
+variable "docker_image_url" {
+  type = string
+}

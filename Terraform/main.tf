@@ -14,6 +14,7 @@ module "ecs_module" {
     public_subnet_2_id = module.vpc_module.public_subnet_2_id
     security_group_allow_http_traffic_id = module.sg_module.security_group_allow_http_traffic_id
     target_group_id = module.alb_module.target_group_id
+    docker_image_url = var.docker_image_url
 }   
 
 module "vpc_module" {
@@ -45,4 +46,5 @@ module "cicd_module" {
     s3_bucket_code_pipeline_artifacts_name = module.s3_module.bucket_name
     github_repo_url = var.github_repo_url
     github_connection_arn = var.github_connection_arn
+    docker_image_url = var.docker_image_url
 }  

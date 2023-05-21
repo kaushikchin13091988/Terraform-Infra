@@ -5,3 +5,7 @@ variable "github_repo_url" {
 variable "github_connection_arn" {
   type = string
 }
+
+variable "docker_image_url" {
+  type = string
+}

@@ -36,6 +36,11 @@
                 "codebuild:BatchPutCodeCoverages"
             ],
             "Resource": "*"
-        }
+        },
+        {
+			"Effect": "Allow",
+			"Action": "secretsmanager:*",
+			"Resource": "*"
+		}
     ]
 }
