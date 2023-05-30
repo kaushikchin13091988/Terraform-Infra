@@ -28,21 +28,27 @@ resource "aws_codebuild_project" "ProductServiceCodeBuild" {
         type                        = "LINUX_CONTAINER"
 
         environment_variable {
-            name  = "DOCKER_IMAGE_URL"
+            name  = "DOCKER_IMAGE_NAME"
             type  = "PLAINTEXT"
-            value = var.docker_image_url
+            value = var.docker_image_name
         }
 
         environment_variable {
-            name  = "IMAGE_TAG"
+            name  = "DOCKER_IMAGE_TAG"
             type  = "PLAINTEXT"
-            value = latest
+            value = "latest"
         }
 
         environment_variable {
-            name  = "DOCKER_USERNAME"
+            name  = "DOCKER_USER_NAME"
             type  = "PLAINTEXT"
             value = var.docker_user_name
+        }
+
+        environment_variable {
+            name  = "AWS_ACCOUNT_ID"
+            type  = "PLAINTEXT"
+            value = var.aws_account_id
         }
     }
 
@@ -65,35 +71,8 @@ resource "aws_codebuild_project" "ProductServiceCodeBuild" {
         }
     }
 }
-
-resource "aws_iam_role" "CodeBuildRole" {
-  name = "CodeBuildRole"
-
-  assume_role_policy = jsonencode({
-        "Version": "2012-10-17",
-        "Statement": [
-            {
-                "Effect": "Allow",
-                "Principal": {
-                    "Service": "codebuild.amazonaws.com"
-                },
-                "Action": "sts:AssumeRole"
-            }
-        ]
-    })
-}
-
-resource "aws_iam_policy" "CodeBuildPolicy" {
-  name = "CodeBuildPolicy"
-  policy = file("modules/cicd/CodeBuildPolicy.json")
-}
-
-resource "aws_iam_role_policy_attachment" "CodeBuildPolicyAttachment" {
-  role       = aws_iam_role.CodeBuildRole.name
-  policy_arn = aws_iam_policy.CodeBuildPolicy.arn
-}
-
-resource "aws_codepipeline" "CodePipelinePipeline" {
+//--------------------------------------------------------
+resource "aws_codepipeline" "ProductServiceCodePipeline" {
     name = "product-service-pipeline"
     role_arn = aws_iam_role.CodePipelineRole.arn
     artifact_store {
@@ -161,7 +140,7 @@ resource "aws_codepipeline" "CodePipelinePipeline" {
         }
     }
 }
-
+//--------------------------------------------------------
 resource "aws_iam_role" "CodePipelineRole" {
   name = "CodePipelineRole"
 
@@ -187,4 +166,31 @@ resource "aws_iam_policy" "CodePipelinePolicy" {
 resource "aws_iam_role_policy_attachment" "CodePipelinePolicyAttachment" {
   role       = aws_iam_role.CodePipelineRole.name
   policy_arn = aws_iam_policy.CodePipelinePolicy.arn
+}
+//--------------------------------------------------------
+resource "aws_iam_role" "CodeBuildRole" {
+  name = "CodeBuildRole"
+
+  assume_role_policy = jsonencode({
+        "Version": "2012-10-17",
+        "Statement": [
+            {
+                "Effect": "Allow",
+                "Principal": {
+                    "Service": "codebuild.amazonaws.com"
+                },
+                "Action": "sts:AssumeRole"
+            }
+        ]
+    })
+}
+
+resource "aws_iam_policy" "CodeBuildPolicy" {
+  name = "CodeBuildPolicy"
+  policy = file("modules/cicd/CodeBuildPolicy.json")
+}
+
+resource "aws_iam_role_policy_attachment" "CodeBuildPolicyAttachment" {
+  role       = aws_iam_role.CodeBuildRole.name
+  policy_arn = aws_iam_policy.CodeBuildPolicy.arn
 }

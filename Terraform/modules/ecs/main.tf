@@ -1,10 +1,10 @@
 
-resource "aws_appautoscaling_policy" "AutoScalingPolicy" {
+resource "aws_appautoscaling_policy" "ProductsServiceAutoScalingPolicy" {
   name = "products-service-scaling-policy"
   policy_type = "TargetTrackingScaling"
-  resource_id = aws_appautoscaling_target.AutoScalingTarget.resource_id
-  scalable_dimension = aws_appautoscaling_target.AutoScalingTarget.scalable_dimension
-  service_namespace = aws_appautoscaling_target.AutoScalingTarget.service_namespace
+  resource_id = aws_appautoscaling_target.ProductsServiceAutoScalingTarget.resource_id
+  scalable_dimension = aws_appautoscaling_target.ProductsServiceAutoScalingTarget.scalable_dimension
+  service_namespace = aws_appautoscaling_target.ProductsServiceAutoScalingTarget.service_namespace
 
   target_tracking_scaling_policy_configuration {
     predefined_metric_specification {
@@ -16,20 +16,20 @@ resource "aws_appautoscaling_policy" "AutoScalingPolicy" {
   }
 }
 
-resource "aws_appautoscaling_target" "AutoScalingTarget" {
+resource "aws_appautoscaling_target" "ProductsServiceAutoScalingTarget" {
   max_capacity       = 20
   min_capacity       = 2
-  resource_id        = "service/${aws_ecs_cluster.TestECSCluster.name}/${aws_ecs_service.ECSProductsService.name}"
+  resource_id        = "service/${aws_ecs_cluster.TestECSCluster.name}/${aws_ecs_service.ProductsServiceECSService.name}"
   scalable_dimension = "ecs:service:DesiredCount"
   service_namespace  = "ecs"
 }
-
-resource "aws_ecs_service" "ECSProductsService" {
+//--------------------------------------------------------
+resource "aws_ecs_service" "ProductsServiceECSService" {
     name = "products-ecs-service"
     cluster = aws_ecs_cluster.TestECSCluster.arn
     load_balancer {
         target_group_arn = var.target_group_id
-        container_name = "products-service"
+        container_name = var.docker_image_name
         container_port = 80
     }
     desired_count = 2
@@ -66,8 +66,8 @@ resource "aws_ecs_task_definition" "ProductsServiceECSTaskDefinition" {
   task_role_arn            = aws_iam_role.EcsServiceTaskRole.arn
   container_definitions = jsonencode([
     {
-      name      = "products-service"
-      image     = var.docker_image_url
+      name      = var.docker_image_name
+      image     = "docker.io/${var.docker_user_name}/${var.docker_image_name}:latest"
       essential = true
       portMappings = [
         {
@@ -78,7 +78,7 @@ resource "aws_ecs_task_definition" "ProductsServiceECSTaskDefinition" {
     }
   ])
 }
-
+//--------------------------------------------------------
 resource "aws_iam_role" "EcsServiceTaskRole" {
   name = "EcsServiceTaskRole"
 
@@ -117,6 +117,11 @@ resource "aws_iam_role_policy_attachment" "CloudWatchFullAccessPolicyAttachment"
   policy_arn = "arn:aws:iam::aws:policy/CloudWatchFullAccess"
 }
 
+resource "aws_iam_role_policy_attachment" "SecretsManagerReadWritePolicyAttachment" {
+  role       = aws_iam_role.EcsServiceTaskRole.name
+  policy_arn = "arn:aws:iam::aws:policy/SecretsManagerReadWrite"
+}
+//--------------------------------------------------------
 resource "aws_iam_role" "EcsServiceExecutionRole" {
   name = "EcsServiceExecutionRole"
 
@@ -139,3 +144,4 @@ resource "aws_iam_role_policy_attachment" "AmazonECSTaskExecutionRolePolicyAttac
   role       = aws_iam_role.EcsServiceExecutionRole.name
   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
 }
+//--------------------------------------------------------
