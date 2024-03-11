@@ -5,10 +5,11 @@ terraform {
             version = "~> 4.65.0"
         }
     }
-
+    
     backend "s3" {
         bucket = "terraform-state-files-20231101"
-        key = "terraform.tfstate"
+        key    = "terraform.tfstate"
+        region = "us-east-1"
     }
 }
 
